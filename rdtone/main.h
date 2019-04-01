@@ -29,5 +29,7 @@ unsigned int g_rotation = 0;
 unsigned int g_ratation_save = 0;
 unsigned int g_distance = 0;
 
+unsigned char g_d;
+
 
 #endif /* MAIN_H_ */

@@ -9,7 +9,7 @@
 #ifndef BLUETOOTH_H_
 #define BLUETOOTH_H_
 
-#define BT_BAUDRATE 9600
+#define BT_BAUDRATE 115200
 #define BT_BAUDRATE_CFG_VALUE(b,f) (((float)(f))/(((float)(b))*16.0)-1.0+0.5)
 
 /* bluetooth uart */

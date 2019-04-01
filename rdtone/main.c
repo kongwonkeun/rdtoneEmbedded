@@ -16,29 +16,35 @@
 ISR(ADC_vect) {
     g_distance = ADCW;
     ADCSRA |= (1 << ADSC);
-    txChar('D');
 }
 
 ISR(INT0_vect) {
     g_rotation++;
-    txChar('I');
+    txChar('R');
+    txBtChar('R');
 }
 
 ISR(TIMER0_COMP_vect) {
     g_millisec++;
     if (!(g_millisec % 1000)) {
         txChar('T');
+        txBtChar('T');
         g_sec++;
         if (!(g_sec % 60)) {
             g_minute++;
         }
+        g_d = (unsigned char)(getDistance(DISTANCE_CHANNEL) & 0xff);
+        txChar('D');
+        txDecimalByte(g_d, 2);
+        txBtChar('D');
+        txBtDecimalByte(g_d, 2);
     }
 }
 
 int main(void)
 {
     unsigned char c;
-    unsigned int  i;
+    unsigned char d;
 
     initConsole();
     initAdc0();
@@ -51,20 +57,6 @@ int main(void)
 
     while (1)
     {
-        i = readAdc0(DISTANCE_CHANNEL);
-        txHexInt(i);
-        txNewLine();
-        i = calculateMilliVolt(i);
-        txHexInt(i);
-        txNewLine();
-        i = calculateCentiMeter(i);
-        txDecimalByte(i, 2);
-        txString("cm\r\n");
-        
-        //distance = getDistance(DISTANCE_CHANNEL);
-        //txHexInt(distance);
-        //txNewLine();
-
         txString("enter\r\n");
         while (1) {
             if (rxBtCharAvailable()) {
@@ -77,7 +69,18 @@ int main(void)
             }
         }
         txString("exit\r\n");
-        c = rxChar();
+        cli();
+        while (1) {
+            if (rxBtCharAvailable()) {
+                txChar(rxBtChar());
+            }
+            if (rxCharAvailable()) {
+                c = rxChar();
+                if (c == '!') break;
+                txBtChar(c);
+            }
+        }
+        sei();
     }
 }
 
